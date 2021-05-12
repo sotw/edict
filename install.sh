@@ -21,3 +21,5 @@ select yn in "Yes" "No"; do
 	    No ) google have a nice day; break;;
 	esac
 done
+echo "This utility depends on beautifulsoup 4"
+echo "in case you use ubuntu 20.04 LTS launch sodo apt install python3-bs4"
