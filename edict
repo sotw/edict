@@ -15,7 +15,7 @@ function concatenate_args
 echo "$string"
 }
 
-PKGFOLDER=~/.hmDict
+PKGFOLDER=~/.edict
 args="$(concatenate_args "$@")"
 tPage="https://tw.dictionary.search.yahoo.com/search?p="$args
 exeName=$0
