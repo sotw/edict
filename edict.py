@@ -99,7 +99,7 @@ def main():
 
 def setup_logging(level):
 	global DB
-	DB = logging.getLogger('get_ted_talk_science') #replace
+	DB = logging.getLogger('edict') #replace
 	DB.setLevel(level)
 	handler = logging.StreamHandler(sys.stdout)
 	handler.setFormatter(logging.Formatter('%(module)s %(levelname)s %(funcName)s| %(message)s'))
