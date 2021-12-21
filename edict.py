@@ -32,8 +32,8 @@ def strip_tags(html, invalid_tags):
 
             for c in tag.contents:
                 if not isinstance(c, NavigableString):
-                    c = strip_tags(unicode(c), invalid_tags)
-                s += unicode(c)
+                    c = strip_tags(str(c,'utf8'), invalid_tags)
+                s += str(c,'utf8')
 
             tag.replaceWith(s)
     return stripSoup
