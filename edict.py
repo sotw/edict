@@ -1,4 +1,4 @@
-# Author Pei-Chen Tsai aka Hammer
+# Author Pei-Chen Tsai
 # Ok, the line break position is impossible to 100% accurate currently, so just tune global parameter for your own purpose
 
 import os, sys, re, codecs, io
@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup,NavigableString
 
 global DB
 global args
-global ARGUDB #arugment database
+global ARGUDB
 global tPage
 global mProun
 
@@ -77,6 +77,7 @@ def prettyPrint(resultString):
 
 def loadArgumentDb():
 	home = expanduser('~')
+	print(home+args.database)
 	if os.path.isfile(home+args.database) is True:
 		f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
 		if f is not None:
@@ -106,19 +107,20 @@ def setup_logging(level):
 	DB.addHandler(handler)
 
 def verify():
-	global tPage
-	global args
-	parser = argparse.ArgumentParser(description='A English Dictionary Utility') #replace
-	parser.add_argument('-v', '--verbose', dest='verbose', action = 'store_true', default=False, help='Verbose mode')
-	parser.add_argument('query', nargs='*', default=None)
-	parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.hmDict/edict.db') #replace
-	args = parser.parse_args()
-	tPage = ' '.join(args.query)
-	log_level = logging.INFO
-	if args.verbose:
-		log_level = logging.DEBUG
-	if not tPage:
-		parser.print_help()
+    global tPage
+    global args
+    parser = argparse.ArgumentParser(description='A English Dictionary Utility') #replace
+    parser.add_argument('-v', '--verbose', dest='verbose', action = 'store_true', default=False, help='Verbose mode')
+    parser.add_argument('query', nargs='*', default=None)
+    parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db') #replace
+    args = parser.parse_args()
+    tPage = ' '.join(args.query)
+    log_level = logging.INFO
+    if args.verbose:
+        log_level = logging.DEBUG
+    if not tPage or len(tPage) == 48:
+        parser.print_help()
+        exit(1)
 
 if __name__ == '__main__':
 	verify()
