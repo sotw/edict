@@ -1,5 +1,4 @@
 # Author Pei-Chen Tsai
-# Ok, the line break position is impossible to 100% accurate currently, so just tune global parameter for your own purpose
 
 import os, sys, re, codecs, io
 import urllib
@@ -7,6 +6,8 @@ import urllib.request, urllib.error
 import argparse
 import logging
 import platform
+import sqlite3
+from HMTXCLR import clrTx
 from os.path import expanduser
 from pprint import pprint
 from bs4 import BeautifulSoup,NavigableString
@@ -16,10 +17,15 @@ global args
 global ARGUDB
 global tPage
 global mProun
+global wordDb
+global cursor
+global ScreenI
+global parser
 
 mProun = []
 ARGUDB        = []
-tPage         = ''
+ScreenI = []
+tPage         = 'https://tw.dictionary.search.yahoo.com/search?p='
 INSFOLDER = ''
 bWindows = False
 
@@ -76,27 +82,99 @@ def prettyPrint(resultString):
         print(line.get_text())
 
 def loadArgumentDb():
-	home = expanduser('~')
-	print(home+args.database)
-	if os.path.isfile(home+args.database) is True:
-		f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
-		if f is not None:
-			for line in f:
-				if line != '\n' and line[0] != '#':
-					line = line.rstrip('\n')
-					global ARGUDB
-					ARGUDB.append(line)
-			f.close()
-		else:
-			DB.error('db file open fail')
-	else :
-		print('database doesn\'t existed')
-	#print ARGUDB
-	#raw_input()
+    global wordDb
+    global cursor
+    home = expanduser('~')
+    print(home+args.database)
+    if os.path.isfile(home+args.database) is True:
+        f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
+        if f is not None:
+            for line in f:
+                if line != '\n' and line[0] != '#':
+                    line = line.rstrip('\n')
+                    global ARGUDB
+                    ARGUDB.append(line)
+            f.close()
+        else:
+            DB.error('db file open fail')
+    else :
+        print('database doesn\'t existed')
+    wordDb = sqlite3.connect(home+args.sql3db)
+    cursor = wordDb.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS WOI
+    (WORD TEXT PRIMARY KEY NOT NULL UNIQUE,
+    REFCOUNT INT,
+    NOTE_A TEXT,
+    NOTE_B TEXT,
+    NOTE_C TEXT
+    );''')
+    wordDb.commit()
+
+def SQLStuff():
+    global wordDb
+    global cursor
+    global tPage
+
+    patterns = tPage.split("?p=")
+    if len(patterns) > 1:
+        print(patterns[1])
+        cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{patterns[1]}\"")
+        rows = cursor.fetchall()
+        rowsCnt = len(rows)
+#        print(f"rows:{rowsCnt}")
+        if rowsCnt == 0:
+            cursor.execute(f"INSERT OR REPLACE INTO WOI(WORD,REFCOUNT) values(\"{patterns[1]}\",1)")
+            wordDb.commit()
+        else:
+            cursor.execute(f"UPDATE WOI SET REFCOUNT=REFCOUNT+1")
+            wordDb.commit()
+
+    cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{patterns[1]}\"")
+    for row in cursor.fetchall():
+        print(f"This pattern : \"{row[0]}\" has been consulted {row[1]} times!")
+
+def SQLDump():
+    global wordDb
+    global cursor
+    global ScreenI
+    rec_word = ""
+    rec_cnt = 0
+    rec_note_a = ""
+    rec_note_b = ""
+    rec_note_c = ""
+
+    cursor.execute(f"SELECT * FROM WOI")
+    rows = cursor.fetchall()
+    for row in rows:
+        ScreenI.append({'word':row[0], 'refcnt':str(row[1]), 'note_a':str(row[2]), 'note_b':str(row[3]), 'note_c':str(row[4])})
+
+    if len(rows) > 0:
+        for x in range(85):
+            print("=",end='')
+        print("=")
+        print("|"+clrTx("                                         Word","CYAN")+"|"+clrTx("Count","CYAN")+ \
+        "|"+clrTx("    Note A","CYAN")+"|"+clrTx("    Note B","CYAN")+ \
+        "|"+clrTx("    Note C","CYAN")+"|")
+        for item in ScreenI:
+            target_str = f"|{item['word']:>45}|{item['refcnt']:>5}|{item['note_a']:>10}|{item['note_b']:>10}|{item['note_c']:>10}|" 
+            print(clrTx(target_str,"WHITE"))
+        for x in range(85):
+            print("=",end='')
+        print("=")
 
 def main():
-   resultString = htmlParser(tPage)
-   prettyPrint(resultString)
+    global tPage
+    global args
+    global parser
+    if args.statistic:
+        SQLDump()
+    elif not tPage or len(tPage) == 48:
+        parser.print_help()
+        exit(1)
+    else:
+        resultString = htmlParser(tPage)
+        prettyPrint(resultString)
+        SQLStuff()
 
 def setup_logging(level):
 	global DB
@@ -109,20 +187,21 @@ def setup_logging(level):
 def verify():
     global tPage
     global args
+    global parser
     parser = argparse.ArgumentParser(description='A English Dictionary Utility') #replace
     parser.add_argument('-v', '--verbose', dest='verbose', action = 'store_true', default=False, help='Verbose mode')
-    parser.add_argument('query', nargs='*', default=None)
     parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db') #replace
+    parser.add_argument('-q', '--sqlite3', dest='sql3db', action = 'store', default='/.edict/edict.db3') #replace
+    parser.add_argument('-s', '--statistic', dest='statistic', action = 'store_true', default=False, help='Some statistic') #replace
+    parser.add_argument('query', nargs='*', default=None)
     args = parser.parse_args()
-    tPage = ' '.join(args.query)
+    tPage = tPage+' '.join(args.query)
     log_level = logging.INFO
     if args.verbose:
         log_level = logging.DEBUG
-    if not tPage or len(tPage) == 48:
-        parser.print_help()
-        exit(1)
 
 if __name__ == '__main__':
-	verify()
-	loadArgumentDb()
-	main()
+    verify()
+    loadArgumentDb()
+    main()
+    

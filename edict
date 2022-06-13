@@ -3,21 +3,21 @@ function concatenate_args
 	string=""
 	for a in "$@" # Loop over arguments
 	do
-		if [[ "${a:0:1}" != "-" ]] # Ignore flags (first character is -)
+		#if [[ "${a:0:1}" != "-" ]] # Ignore flags (first character is -)
+		#then
+		if [[ "$string" != "" ]]
 		then
-			if [[ "$string" != "" ]]
-			then
-				string+="%20" # Delimeter
-			fi
-		string+="$a"
+			string+="%20" # Delimeter
 		fi
+		string+="$a"
+		#fi
 	done
 echo "$string"
 }
 
 PKGFOLDER=~/.edict
 args="$(concatenate_args "$@")"
-tPage="https://tw.dictionary.search.yahoo.com/search?p="$args
+tPage=$args
 exeName=$0
 exeName=${exeName##*/}
 exeName=${exeName%.*}
