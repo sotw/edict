@@ -85,7 +85,7 @@ def loadArgumentDb():
     global wordDb
     global cursor
     home = expanduser('~')
-    print(home+args.database)
+#    print(home+args.database)
     if os.path.isfile(home+args.database) is True:
         f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
         if f is not None:
@@ -117,21 +117,29 @@ def SQLStuff():
 
     patterns = tPage.split("?p=")
     if len(patterns) > 1:
-        print(patterns[1])
-        cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{patterns[1]}\"")
+#        print(patterns[1])
+        targetPattern = patterns[1].replace('%20',' ')
+        cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{targetPattern}\"")
         rows = cursor.fetchall()
         rowsCnt = len(rows)
 #        print(f"rows:{rowsCnt}")
         if rowsCnt == 0:
-            cursor.execute(f"INSERT OR REPLACE INTO WOI(WORD,REFCOUNT) values(\"{patterns[1]}\",1)")
+            cursor.execute(f"INSERT OR REPLACE INTO WOI(WORD,REFCOUNT) values(\"{targetPattern}\",1)")
             wordDb.commit()
         else:
             cursor.execute(f"UPDATE WOI SET REFCOUNT=REFCOUNT+1")
             wordDb.commit()
+        
+        cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{targetPattern}\"")
+        for row in cursor.fetchall():
+            print(f"This pattern : \"{row[0]}\" has been consulted {row[1]} times!")
 
-    cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{patterns[1]}\"")
-    for row in cursor.fetchall():
-        print(f"This pattern : \"{row[0]}\" has been consulted {row[1]} times!")
+def SQLFlush():
+    global wordDb
+    global cursor
+    cursor.execute(f"DELETE FROM WOI")
+    wordDb.commit()
+    print("Gone in the wind...")
 
 def SQLDump():
     global wordDb
@@ -168,6 +176,8 @@ def main():
     global parser
     if args.statistic:
         SQLDump()
+    elif args.flushdb:
+        SQLFlush()
     elif not tPage or len(tPage) == 48:
         parser.print_help()
         exit(1)
@@ -188,11 +198,12 @@ def verify():
     global tPage
     global args
     global parser
-    parser = argparse.ArgumentParser(description='A English Dictionary Utility') #replace
+    parser = argparse.ArgumentParser(description='A English Dictionary Utility')
     parser.add_argument('-v', '--verbose', dest='verbose', action = 'store_true', default=False, help='Verbose mode')
-    parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db') #replace
-    parser.add_argument('-q', '--sqlite3', dest='sql3db', action = 'store', default='/.edict/edict.db3') #replace
-    parser.add_argument('-s', '--statistic', dest='statistic', action = 'store_true', default=False, help='Some statistic') #replace
+    parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db')
+    parser.add_argument('-q', '--sqlite3', dest='sql3db', action = 'store', default='/.edict/edict.db3')
+    parser.add_argument('-s', '--statistic', dest='statistic', action = 'store_true', default=False, help='Some statistic')
+    parser.add_argument('-f', '--flushdatabase', dest='flushdb', action = 'store_true', default=False, help='Flush database') 
     parser.add_argument('query', nargs='*', default=None)
     args = parser.parse_args()
     tPage = tPage+' '.join(args.query)

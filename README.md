@@ -23,7 +23,7 @@ edict [word]
 ```
 
 ```bash
-usage: edict.py [-h] [-v] [-d DATABASE] [query ...]
+usage: edict.py [-h] [-v] [-d DATABASE] [-q SQL3DB] [-s] [-f] [query ...]
 
 A English Dictionary Utility
 
@@ -34,10 +34,31 @@ options:
   -h, --help            show this help message and exit
   -v, --verbose         Verbose mode
   -d DATABASE, --database DATABASE
+  -q SQL3DB, --sqlite3 SQL3DB
+  -s, --statistic       Some statistic
+  -f, --flushdatabase   Flush databaseme statistic
 ```
 
+#### New Feature : auto record how many times you consult a word
 
+```bash
+edict -s
+======================================================================================
+|                                         Word|Count|    Note A|    Note B|    Note C|
+|                                     fend off|    5|      None|      None|      None|
+|                                     pump out|    4|      None|      None|      None|
+|                                         pump|    4|      None|      None|      None|
+|                                        plump|    4|      None|      None|      None|
+|                                         evil|    3|      None|      None|      None|
+|                                         live|    2|      None|      None|      None|
+======================================================================================
+```
 
+#### New Feature : delete records
 
+```bash
+edict -f
+Gone in the wind...
+```
 
 
