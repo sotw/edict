@@ -8,9 +8,9 @@ rm -Rf $INSFOLDER
 rm -f ~/bin/sh/edict
 mkdir -p ~/bin/sh
 mkdir -p $INSFOLDER
-cp *.py $INSFOLDER
-cp edict ~/bin/sh
-cp *.db $INSFOLDER
+cp -vf *.py $INSFOLDER
+cp -vf edict ~/bin/sh
+cp -vf *.db $INSFOLDER
 
 chmod -R 755 $INSFOLDER
 chmod -R 755 ~/bin/sh
