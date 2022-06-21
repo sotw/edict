@@ -127,7 +127,7 @@ def SQLStuff():
             cursor.execute(f"INSERT OR REPLACE INTO WOI(WORD,REFCOUNT) values(\"{targetPattern}\",1)")
             wordDb.commit()
         else:
-            cursor.execute(f"UPDATE WOI SET REFCOUNT=REFCOUNT+1")
+            cursor.execute(f"UPDATE WOI SET REFCOUNT=REFCOUNT+1 WHERE WORD=\"{targetPattern}\"")
             wordDb.commit()
         
         cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{targetPattern}\"")
