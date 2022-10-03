@@ -2,7 +2,7 @@
 
 #### Introduction
 
-This simple utility is actully my very first pet project. It's a really easy to use Chinese-English Dictionary web clawler. If you were a Traditional Chinese native speaker and a linux console user, this might be handy for you.
+This simple utility is actully my very first pet project. It's a really easy to use Chinese-English Dictionary web crawler. If you were a Traditional Chinese native speaker and a linux console user, this might be handy for you.
 
 #### How to install
 
