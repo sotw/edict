@@ -19,11 +19,7 @@ and place bashscript under $home/bin/sh
 #### How to use
 
 ```bash
-edict [word]
-```
-
-```bash
-usage: edict.py [-h] [-v] [-d DATABASE] [-q SQL3DB] [-s] [-f] [query ...]
+usage: edict.py [-h] [-v] [-d DATABASE] [-q SQL3DB] [-s] [-l] [-f] [-m] [query ...]
 
 A English Dictionary Utility
 
@@ -35,30 +31,63 @@ options:
   -v, --verbose         Verbose mode
   -d DATABASE, --database DATABASE
   -q SQL3DB, --sqlite3 SQL3DB
-  -s, --statistic       Some statistic
-  -f, --flushdatabase   Flush databaseme statistic
+  -s, --statistic       Dump all consult history
+  -l, --listmark        Dump all marked consult history
+  -f, --flushdatabase   Flush database
+  -m, --marklastword    mark last consulted word for further grouping#### Feature : auto record how many times you consult a word
 ```
-
-#### New Feature : auto record how many times you consult a word
 
 ```bash
 edict -s
 ======================================================================================
-|                                         Word|Count|    Note A|    Note B|    Note C|
+|                                         Word|Count|      MARK|    Note B|    Note C|
 |                                     fend off|    5|      None|      None|      None|
 |                                     pump out|    4|      None|      None|      None|
 |                                         pump|    4|      None|      None|      None|
 |                                        plump|    4|      None|      None|      None|
 |                                         evil|    3|      None|      None|      None|
 |                                         live|    2|      None|      None|      None|
-======================================================================================
+======================================================================================#### Feature : delete records
 ```
-
-#### New Feature : delete records
 
 ```bash
 edict -f
 Gone in the wind...
 ```
+
+#### New Feature : mark the last word
+
+```bash
+edict test // make a consult
+edict -s // dump to see the test is added (not necessary step)
+======================================================================================
+|                                         Word|Count|      MARK|    Note B|    Note C|
+|                                     fend off|    5|      None|      None|      None|
+|                                     pump out|    4|      None|      None|      None|
+|                                         pump|    4|      None|      None|      None|
+|                                        plump|    4|      None|      None|      None|
+|                                         evil|    3|      None|      None|      None|
+|                                         live|    2|      None|      None|      None|
+|                                         test|    1|      None|      None|      None|
+======================================================================================
+edict -m //mark the last consulted word 'test'
+======================================================================================
+|                                         Word|Count|      MARK|    Note B|    Note C|
+|                                         test|    1|         M|      None|      None|
+======================================================================================
+edict -l //to dump all work marked
+
+
+```
+
+This is a feature that mark word you think it worths to do it for any reason.
+
+For example: you might think this is a word that you want to memory right after you consulted it. 
+
+
+
+If you want to mark specific word, just consult it again and mark it.
+
+
 
 
