@@ -204,6 +204,7 @@ def mark_last_word_a():
             DB.error('db file open fail')
     else :
         print('database doesn\'t existed')
+    SQLDump(1)
 
 def main():
     global tPage
