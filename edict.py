@@ -23,9 +23,9 @@ global ScreenI
 global parser
 
 mProun = []
-ARGUDB        = []
+ARGUDB = []
 ScreenI = []
-tPage         = 'https://tw.dictionary.search.yahoo.com/search?p='
+tPage = 'https://tw.dictionary.search.yahoo.com/search?p='
 INSFOLDER = ''
 bWindows = False
 
@@ -85,7 +85,6 @@ def loadArgumentDb():
     global wordDb
     global cursor
     home = expanduser('~')
-#    print(home+args.database)
     if os.path.isfile(home+args.database) is True:
         f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
         if f is not None:
@@ -141,7 +140,7 @@ def SQLFlush():
     wordDb.commit()
     print("Gone in the wind...")
 
-def SQLDump():
+def SQLDump(mark=0):
     global wordDb
     global cursor
     global ScreenI
@@ -151,7 +150,10 @@ def SQLDump():
     rec_note_b = ""
     rec_note_c = ""
 
-    cursor.execute(f"SELECT * FROM WOI")
+    if mark == 0:
+        cursor.execute(f"SELECT * FROM WOI")
+    elif mark == 1:
+        cursor.execute(f"SELECT * FROM WOI WHERE NOTE_A='M'")
     rows = cursor.fetchall()
     for row in rows:
         ScreenI.append({'word':row[0], 'refcnt':str(row[1]), 'note_a':str(row[2]), 'note_b':str(row[3]), 'note_c':str(row[4])})
@@ -161,7 +163,7 @@ def SQLDump():
             print("=",end='')
         print("=")
         print("|"+clrTx("                                         Word","CYAN")+"|"+clrTx("Count","CYAN")+ \
-        "|"+clrTx("    Note A","CYAN")+"|"+clrTx("    Note B","CYAN")+ \
+        "|"+clrTx("      MARK","CYAN")+"|"+clrTx("    Note B","CYAN")+ \
         "|"+clrTx("    Note C","CYAN")+"|")
         for item in ScreenI:
             target_str = f"|{item['word']:>45}|{item['refcnt']:>5}|{item['note_a']:>10}|{item['note_b']:>10}|{item['note_c']:>10}|" 
@@ -170,14 +172,51 @@ def SQLDump():
             print("=",end='')
         print("=")
 
+def save_last_word(pattern):
+    home = expanduser('~')
+    f = open(home+args.database,'w')
+    if f is not None:
+        f.write(pattern+'\n')
+    f.close()
+
+def mark_last_word_a():
+    global cursor
+    global args
+    home = expanduser('~')
+    if os.path.isfile(home+args.database) is True:
+        f = codecs.open(home+args.database,encoding='UTF-8',mode='r')
+        if f is not None:
+            for line in f:
+                #print(f'check out:{line}\n')
+                if line != '\n' and line[0] != '#':
+                    line = line.rstrip('\n')
+                    line = line.replace('%20',' ')
+                    cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{line}\"")
+                    rows = cursor.fetchall()
+                    rowsCnt = len(rows)
+                    if rowsCnt == 0:
+                        print(f'target word \"{line}\" doesn\'t exist in the database')
+                    else:
+                        cursor.execute(f"UPDATE WOI SET NOTE_A='M' WHERE WORD=\"{line}\"")
+                        wordDb.commit()
+            f.close()
+        else:
+            DB.error('db file open fail')
+    else :
+        print('database doesn\'t existed')
+
 def main():
     global tPage
     global args
     global parser
     if args.statistic:
-        SQLDump()
+        SQLDump(0)
+    elif args.listmark:
+        SQLDump(1)
     elif args.flushdb:
         SQLFlush()
+    elif args.marklastword is True:
+        mark_last_word_a()
     elif not tPage or len(tPage) == 48:
         parser.print_help()
         exit(1)
@@ -185,7 +224,9 @@ def main():
         resultString = htmlParser(tPage)
         prettyPrint(resultString)
         SQLStuff()
-
+        pattern = ' '.join(args.query)
+        save_last_word(pattern)
+            
 def setup_logging(level):
 	global DB
 	DB = logging.getLogger('edict') #replace
@@ -203,7 +244,10 @@ def verify():
     parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db')
     parser.add_argument('-q', '--sqlite3', dest='sql3db', action = 'store', default='/.edict/edict.db3')
     parser.add_argument('-s', '--statistic', dest='statistic', action = 'store_true', default=False, help='Some statistic')
-    parser.add_argument('-f', '--flushdatabase', dest='flushdb', action = 'store_true', default=False, help='Flush database') 
+    parser.add_argument('-l', '--listmark', dest='listmark', action = 'store_true', default=False, help='Some statistic where marked')
+
+    parser.add_argument('-f', '--flushdatabase', dest='flushdb', action = 'store_true', default=False, help='Flush database')
+    parser.add_argument('-m', '--marklastword', dest='marklastword', action = 'store_true', default=False, help='mark last word for one of list of unfamiliar word')
     parser.add_argument('query', nargs='*', default=None)
     args = parser.parse_args()
     tPage = tPage+' '.join(args.query)
