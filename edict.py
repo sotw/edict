@@ -251,7 +251,10 @@ def verify():
     parser.add_argument('-m', '--marklastword', dest='marklastword', action = 'store_true', default=False, help='mark last consulted word for further grouping')
     parser.add_argument('query', nargs='*', default=None)
     args = parser.parse_args()
-    tPage = tPage+' '.join(args.query)
+    if len(args.query) != 0:
+        query_string = ' '.join(args.query)
+        query_string = urllib.parse.quote(query_string)
+        tPage = tPage+query_string
     log_level = logging.INFO
     if args.verbose:
         log_level = logging.DEBUG
