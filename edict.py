@@ -117,7 +117,8 @@ def SQLStuff():
     patterns = tPage.split("?p=")
     if len(patterns) > 1:
 #        print(patterns[1])
-        targetPattern = patterns[1].replace('%20',' ')
+        targetPattern = urllib.parse.unquote(patterns[1])
+#        targetPattern = patterns[1].replace('%20',' ')
         cursor.execute(f"SELECT * FROM WOI WHERE WORD=\"{targetPattern}\"")
         rows = cursor.fetchall()
         rowsCnt = len(rows)
