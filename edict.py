@@ -7,6 +7,7 @@ import argparse
 import logging
 import platform
 import sqlite3
+import openai
 from HMTXCLR import clrTx
 from os.path import expanduser
 from pprint import pprint
@@ -21,6 +22,7 @@ global wordDb
 global cursor
 global ScreenI
 global parser
+global gOpenAIKEY
 
 mProun = []
 ARGUDB = []
@@ -28,6 +30,7 @@ ScreenI = []
 tPage = 'https://tw.dictionary.search.yahoo.com/search?p='
 INSFOLDER = ''
 bWindows = False
+gOpenAIKEY=''
 
 def strip_tags(html, invalid_tags):
     stripSoup = BeautifulSoup(html)
@@ -67,8 +70,6 @@ def htmlParser(tPage):
     
     return result
 
-#[]== maybe textwrapper, it's better than this hardcode
-
 def prettyPrint(resultString):
     if bWindows :
         os.system('cls')
@@ -80,6 +81,23 @@ def prettyPrint(resultString):
     print('search target:'+tPage)
     for line in resultString:
         print(line.get_text())
+
+def loadOpenAIKey():
+    global gOpenAIKEY                    
+    home = expanduser('~')
+    if os.path.isfile(home+args.oaikey) is True:
+        f = codecs.open(home+args.oaikey,encoding='UTF-8',mode='r')
+        if f is not None:
+            for line in f:
+                if line != '\n' and line[0] != '#':
+                    line = line.rstrip('\n')
+                    gOpenAIKEY=line                   
+            f.close()
+        else:
+            DB.error('OPEN AI key open fail, load fail')
+    else :
+        print('OPEN AI key doesn\'t existed, load fail')
+
 
 def loadArgumentDb():
     global wordDb
@@ -207,6 +225,52 @@ def mark_last_word_a():
         print('database doesn\'t existed')
     SQLDump(1)
 
+def gen_close_test():
+    global gOpenAIKEY
+    global cursor
+    
+    loadOpenAIKey()
+    if gOpenAIKEY=='':
+        print('OPEN AI key doesn\'t existed, function abort.')
+        exit(3)
+ 
+    cursor.execute(f"SELECT * FROM WOI WHERE NOTE_A='M'")
+    rows = cursor.fetchall()
+    words_strings = []
+    for row in rows:
+        words_strings.append(row[0])
+
+    words_string = ','.join(words_strings)
+
+    openai.api_key=gOpenAIKEY
+    openai.Model.list()
+
+    #response = openai.Image.create(
+    #        prompt="a black cat",
+    #        n=1,
+    #        size="1024x1024"
+    #        )
+    #image_url = response['data'][0]['url']
+    #print(image_url)
+
+
+    my_query="Could you generate a close test by using "+words_string+"?"
+    
+    print("ASK: "+my_query)
+
+    response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Yout are a helpful assistant."},
+#                {"role": "user", "content": "Could you generate a close test by using 'cat', 'dog', and 'hamster'?"}
+#                {"role": "user", "content": "Could you generate an essay within 200 words by using 'cat', 'dog', and 'hamster'?"}
+                {"role": "user", "content": my_query}
+            ]
+    )
+
+    print(response['choices'][0]['message']['content'])
+
+
 def main():
     global tPage
     global args
@@ -219,6 +283,8 @@ def main():
         SQLFlush()
     elif args.marklastword is True:
         mark_last_word_a()
+    elif args.doingAI:
+        gen_close_test()
     elif not tPage or len(tPage) == 48:
         parser.print_help()
         exit(1)
@@ -241,7 +307,8 @@ def verify():
     global tPage
     global args
     global parser
-    parser = argparse.ArgumentParser(description='A English Dictionary Utility')
+    global g_query_string_for_ai
+    parser = argparse.ArgumentParser(description='A English Dictionary Utility with AI')
     parser.add_argument('-v', '--verbose', dest='verbose', action = 'store_true', default=False, help='Verbose mode')
     parser.add_argument('-d', '--database', dest='database', action = 'store', default='/.edict/edict.db')
     parser.add_argument('-q', '--sqlite3', dest='sql3db', action = 'store', default='/.edict/edict.db3')
@@ -250,6 +317,10 @@ def verify():
 
     parser.add_argument('-f', '--flushdatabase', dest='flushdb', action = 'store_true', default=False, help='Flush database')
     parser.add_argument('-m', '--marklastword', dest='marklastword', action = 'store_true', default=False, help='mark last consulted word for further grouping')
+    parser.add_argument('-a', '--ai', dest='doingAI', action = 'store_true', default=False, help='Doing AI base on consulting history')
+    parser.add_argument('-i', '--queryai', dest='queryAI', action = 'store_true', default=False, help='Using AI to do something amazing')
+    parser.add_argument('-k', '--openaikey', dest='oaikey', action = 'store', default='/.edict/.oaikey')
+
     parser.add_argument('query', nargs='*', default=None)
     args = parser.parse_args()
     if len(args.query) != 0:
