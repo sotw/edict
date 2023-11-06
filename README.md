@@ -38,6 +38,8 @@ Note: you don't need to have openai key to use basic feature.
 
 #### How to use
 
+Check out the usage guide video: https://www.youtube.com/watch?v=1uK9qrqCZDU
+
 Under console ( recommand wsl/ubuntu )
 
 You can get a help file like the following:
@@ -91,8 +93,6 @@ This pattern : "incantation" has been consulted 1 times!
 |                                          cat|    1|         M|      None|      None|
 |                                          dog|    1|      None|      None|      None|
 ======================================================================================
-
-
 ```
 
 #### Feature : mark the last word
