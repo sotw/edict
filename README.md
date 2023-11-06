@@ -101,8 +101,6 @@ Note: this utility will record the fail consulting string as well, so if you fou
 ======================================================================================
 ```
 
-
-
 #### Feature: dump consulting history
 
 ```bash
@@ -131,10 +129,10 @@ Note: this utility will record the fail consulting string as well, so if you fou
 
 This will take a while depending on the response time of OPEN AI. and you probably will get different result every time. I
 
-```bash
+```textile
 > edict -a
 ASK: Could you generate a close test by using incantation?
-Certainly! Here\'s a close test using the theme of incantations:
+Certainly! Here's a close test using the theme of incantations:
 
 Complete the following sentences by selecting the correct word or phrase:
 
