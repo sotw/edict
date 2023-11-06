@@ -83,10 +83,16 @@ This pattern : "incantation" has been consulted 1 times!
 
 ```bash
 > edict -s
+
 ======================================================================================
 |                                         Word|Count|      MARK|    Note B|    Note C|
-|                                  incantation|    1|      None|      None|      None|
+|                                  incantation|    2|         M|      None|      None|
+|                                        magic|    1|         M|      None|      None|
+|                                          cat|    1|         M|      None|      None|
+|                                          dog|    1|      None|      None|      None|
 ======================================================================================
+
+
 ```
 
 #### Feature : mark the last word
@@ -98,21 +104,7 @@ Note: this utility will record the fail consulting string as well, so if you fou
 ======================================================================================
 |                                         Word|Count|      MARK|    Note B|    Note C|
 |                                  incantation|    1|         M|      None|      None|
-======================================================================================
-```
-
-#### Feature: dump consulting history
-
-```bash
-> edict -s
-======================================================================================
-|                                         Word|Count|      MARK|    Note B|    Note C|
-|                                       grease|    1|      None|      None|      None|
-|                                           ai|    1|      None|      None|      None|
-|                                   armageddon|    1|      None|      None|      None|
-|                                     exoplnet|    1|      None|      None|      None|
-|                                  incantation|    1|         M|      None|      None|
-======================================================================================
+====================================================================================== 
 ```
 
 #### Feature: dump the list of marked words
@@ -121,7 +113,9 @@ Note: this utility will record the fail consulting string as well, so if you fou
 > edict -l
 ======================================================================================
 |                                         Word|Count|      MARK|    Note B|    Note C|
-|                                  incantation|    1|         M|      None|      None|
+|                                  incantation|    2|         M|      None|      None|
+|                                        magic|    1|         M|      None|      None|
+|                                          cat|    1|         M|      None|      None|
 ======================================================================================
 ```
 
@@ -131,70 +125,21 @@ This will take a while depending on the response time of OPEN AI. and you probab
 
 ```textile
 > edict -a
-ASK: Could you generate a close test by using incantation?
-Certainly! Here's a close test using the theme of incantations:
+ASK: Could you generate a close test by using incantation,magic,cat?
+Certainly! Here's a close test using the words "incantation," "magic," and "cat":
 
-Complete the following sentences by selecting the correct word or phrase:
+1. The witch spoke a mysterious ________ that summoned a powerful spell.
+2. The magician amazed the audience with his incredible ________ tricks.
+3. The ancient book contained secret ________ spells handed down through generations.
+4. The little girl giggled as she watched her ________ playfully chase a ball of yarn.
+5. The sorcerer waved his wand and whispered an ________ to make the object levitate.
+6. The old wizard had a black ________ that seemed to possess mystical powers.
+7. The enchantress used an ________ to transform a pumpkin into a beautiful carriage.
+8. The charmed amulet radiated a pulsating ________ energy.
+9. The feline companion purred contentedly as the witch recited a poetic ________.
+10. The illusionist's breathtaking ________ show left the audience in awe.
 
-1. In ancient rituals, the priest would recite a powerful _______ to invoke supernatural forces.
-   a) mantra
-   b) incantation
-   c) spell
-   d) enchantment
-
-2. The ingredients for the magic potion included ___________, rare herbs, and a sprinkle of fairy dust.
-   a) mystical crystals
-   b) magical amulets
-   c) arcane artifacts
-   d) bewitched potions
-
-3. As the wizard waved his wand and chanted the ________, the room filled with a shimmering aura.
-   a) hex
-   b) curse
-   c) charm
-   d) incantation
-
-4. The witch carefully wrote down the intricate _______ for a powerful love spell.
-   a) formula
-   b) invocation
-   c) enchantment
-   d) mantra
-
-5. The sorcerer's _______ echoed through the night, causing the earth to tremble and the sky to darken.
-   a) mantra
-   b) chant
-   c) spell
-   d) incantation
-
-6. The fairy whispered a _______ to the newborn flower, instantly making it bloom with vibrant colors.
-   a) spell
-   b) incantation
-   c) hex
-   d) enchantment
-
-7. The ancient book contained a collection of _______ from different cultures and civilizations.
-   a) charms
-   b) spells
-   c) incantations
-   d) mantras
-
-8. The apprentices diligently practiced their _______ to master the art of spellcasting.
-   a) enchantments
-   b) incantations
-   c) hexes
-   d) rituals
-
-9. The sorceress used her ________ to ward off evil spirits and protect the village from harm.
-   a) incantation
-   b) invocation
-   c) mantra
-   d) spell
-
-10. The wise old wizard shared a secret ________ with the chosen hero, enabling them to defeat the dark sorcerer.
-    a) enchantment
-    b) incantation
-    c) mantra
-    d) invocation
+Remember to fill in the blanks with the most suitable word that fits the context.
 ```
 
 #### Feature empty the history
