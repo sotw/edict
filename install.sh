@@ -1,26 +1,43 @@
 INSFOLDER=~/.edict
-echo "If you are mac user, please use mac port"
-echo "http://www.macports.org/"
-echo "And download both python and pip"
-echo "And don't forget set PATH for ~/bin/sh all wrapped bash script is there"
-rm -Rf $INSFOLDER
-rm -f ~/bin/sh/edict
+FULL_INSTALL=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -f|--full)
+            FULL_INSTALL=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$FULL_INSTALL" = true ]; then
+    echo "Full installation (including database)..."
+    rm -Rf $INSFOLDER
+else
+    echo "Updating code files only (database preserved)..."
+fi
+
 mkdir -p ~/bin/sh
 mkdir -p $INSFOLDER
+
 cp -vf *.py $INSFOLDER
 cp -vf edict ~/bin/sh
-cp -vf *.db $INSFOLDER
 
+if [ "$FULL_INSTALL" = true ]; then
+    cp -vf *.db $INSFOLDER
+fi
 
 chmod -R 755 $INSFOLDER
 chmod -R 755 ~/bin/sh
 
-echo "Do you want to add PATH envirnment in .bashrc?(restart terminal will effect at once)"
-select yn in "Yes" "No"; do
-	case $yn in
-		Yes ) echo "PATH=$PATH:~/bin/sh:~/bin" > ~/.bashrc; break;;
-	    No ) google have a nice day; break;;
-	esac
-done
-echo "This utility depends on beautifulsoup 4"
-echo "in case you use ubuntu 20.04 LTS launch sodo apt install python3-bs4"
+if [ ! -d "$INSFOLDER/venv" ]; then
+    python3 -m venv "$INSFOLDER/venv"
+    source "$INSFOLDER/venv/bin/activate"
+    pip install beautifulsoup4 openai
+fi
+
+echo "Done!"

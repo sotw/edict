@@ -12,7 +12,7 @@ Currently  you can use this simple utiliy to generate your own close test
 
 #### How to install
 
-Need python3 and bs4 (beautifual soup 4) and openai 
+Need python3 and pip
 
 1. git clone
 
@@ -22,7 +22,23 @@ I will create a invisible .edict under your home folder
 
 and place bashscript under $home/bin/sh
 
+The script automatically creates a virtual environment and installs dependencies (beautifulsoup4, openai).
+
 ###### [optional]
+
+##### Full installation
+
+To perform a full installation (including database reset):
+
+```bash
+./install.sh --full
+```
+
+To update code while preserving your database:
+
+```bash
+./install.sh
+```
 
 If you want to use  ai, you need to buy a openai key to use
 

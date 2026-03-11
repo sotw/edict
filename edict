@@ -1,21 +1,26 @@
-function concatenate_args
-{
+function concatenate_args {
 	string=""
-	for a in "$@" # Loop over arguments
+	for a in "$@"
 	do
-		#if [[ "${a:0:1}" != "-" ]] # Ignore flags (first character is -)
-		#then
 		if [[ "$string" != "" ]]
 		then
-			string+="%20" # Delimeter
+			string+="%20"
 		fi
 		string+="$a"
-		#fi
 	done
-echo "$string"
+	echo "$string"
 }
 
 PKGFOLDER=~/.edict
+
+if [ ! -d "$PKGFOLDER/venv" ]; then
+    python3 -m venv "$PKGFOLDER/venv"
+    source "$PKGFOLDER/venv/bin/activate"
+    pip install beautifulsoup4 openai
+else
+    source "$PKGFOLDER/venv/bin/activate"
+fi
+
 args="$(concatenate_args "$@")"
 tPage=$args
 exeName=$0
