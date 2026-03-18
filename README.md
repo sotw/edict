@@ -1,174 +1,99 @@
-## An English Dictionary with AI
+# 📖 Edict: AI-Powered Console Dictionary
 
-#Generative ai #Console English dictionary #web crawler
+[![Python Version](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-#### Introduction
+**Edict** is a lightweight English-Chinese dictionary utility for the Linux console. Originally created in 2008 as a web crawler, it was modernized in 2023 with Generative AI to help users generate study materials like cloze tests. It is specifically designed for Traditional Chinese native speakers who use the Linux console or WSL.
 
-This simple utility is actully my very first pet project back to 2008. It's a really easy to use English-Chinese Dictionary web crawler. If you were a Traditional Chinese native speaker and a linux console user, this might be handy for you.
+---
 
-At 2023, now I combined with AI usage.
+## ✨ Key Features
+* **Instant Lookup:** Crawls Yahoo Dictionary for KK/DJ/IPA phonetics and Traditional Chinese definitions.
+* **Smart History:** Automatically tracks how many times you have consulted a specific word.
+* **Favorites System:** "Mark" words to create a curated list for further study.
+* **AI Study Assistant:** Uses OpenAI to generate custom **Cloze Tests** (fill-in-the-blank) based on your marked vocabulary.
 
-Currently  you can use this simple utiliy to generate your own close test
+---
 
-#### How to install
+## 🚀 Installation
 
-Need python3 and pip
+### Prerequisites
+* Python 3.x and Pip.
+* A Linux environment (WSL/Ubuntu recommended).
 
-1. git clone
-
-2. install.sh
-
-I will create a invisible .edict under your home folder
-
-and place bashscript under $home/bin/sh
-
-The script automatically creates a virtual environment and installs dependencies (beautifulsoup4, openai).
-
-###### [optional]
-
-##### Full installation
-
-To perform a full installation (including database reset):
-
-```bash
+### Setup
+1. **Clone the repository:**
+~~~bash
+git clone <your-repository-link>
+cd edict
+~~~
+2. **Run the installer:**
+The script creates a virtual environment, installs dependencies (`beautifulsoup4`, `openai`), and sets up a hidden `.edict` folder in your home directory.
+~~~bash
+# For a full installation including database reset
 ./install.sh --full
-```
 
-To update code while preserving your database:
-
-```bash
+# To update code while preserving your database
 ./install.sh
-```
+~~~
 
-If you want to use  ai, you need to buy a openai key to use
+### 🤖 AI Configuration (Optional)
+To use the generative study features, you need an OpenAI API key:
+1. Obtain a key from OpenAI.
+2. Save it to your config folder:
+~~~bash
+echo "your_open_ai_key" > .oaikey
+mv .oaikey ~/.edict
+~~~
+*Note: You do not need an OpenAI key to use basic dictionary features.*
 
-google "open ai key"
+---
 
-Once you have the key, 
+## 🛠 Usage Guide
 
-1. echo "my open ai key" > .oaikey
+### Basic Dictionary Lookup
+Query a word directly from the console:
+~~~bash
+edict incantation
+~~~
+*Outputs: Phonetics, definitions from Yahoo/PyDict, and your consultation count.*
 
-2. mv .oaikey ~/.edict
+### Managing Vocabulary & History
+* **View History (`-s`):** Displays a table of all consulted words and their counts.
+* **Mark Last Word (`-m`):** Adds the most recently searched word to your favorites list.
+* **List Marked (`-l`):** Dumps the list of all words you have marked.
+* **Flush Database (`-f`):** Clears all history and marks.
 
-Note: you don't need to have openai key to use basic feature.
+### Generative AI Study Tool
+Generate a cloze test from your marked words:
+~~~bash
+edict -a
+~~~
+**Example Output:**
+> 1. The witch spoke a mysterious ________ that summoned a powerful spell.
+> 2. The magician amazed the audience with his incredible ________ tricks.
 
-#### How to use
+---
 
-Check out the usage guide video: https://www.youtube.com/watch?v=1uK9qrqCZDU
+## ⌨️ Command Options Summary
 
-Under console ( recommand wsl/ubuntu )
+| Option | Description |
+| :--- | :--- |
+| `-h, --help` | Show the help message and exit |
+| `-v, --verbose` | Enable verbose mode |
+| `-s, --statistic`| Dump all consultation history |
+| `-l, --listmark` | Show only marked (favorite) words |
+| `-m, --marklastword` | Mark the last consulted word for further grouping |
+| `-a, --ai` | Generate AI Cloze Test based on marked history |
+| `-i, --queryai` | Using AI to do something amazing (custom queries) |
+| `-f, --flushdatabase` | Clear all records from the database |
+| `-k, --openaikey` | Manually provide an OpenAI key |
 
-You can get a help file like the following:
+---
 
-```bash
-> edict
-usage: edict.py [-h] [-v] [-d DATABASE] [-q SQL3DB] [-s] [-l] [-f] [-m] [-a] [-i] [-k OAIKEY] [query ...]
+## 📺 Demo
+Check out the usage guide video: [Watch on YouTube](https://www.youtube.com/watch?v=1uK9qrqCZDU).
 
-A English Dictionary Utility with AI
-
-positional arguments:
-  query
-
-options:
-  -h, --help            show this help message and exit
-  -v, --verbose         Verbose mode
-  -d DATABASE, --database DATABASE
-  -q SQL3DB, --sqlite3 SQL3DB
-  -s, --statistic       Dump all consult history
-  -l, --listmark        Dump all marked consult history
-  -f, --flushdatabase   Flush database
-  -m, --marklastword    mark last consulted word for further grouping
-  -a, --ai              Doing AI base on consulting history
-  -i, --queryai         Using AI to do something amazing
-  -k OAIKEY, --openaikey OAIKEY
-```
-
-#### Feature: consult the chinese english dictionary
-
-```bash
-> edict incantation
-search target:https://tw.dictionary.search.yahoo.com/search?p=incantation
-KK[͵ɪnkænˋteʃən]
-DJ[͵inkænˋteiʃən]
-IPA[ˌɪnkænˈteɪʃn]
-咒語
-咒語
-PyDict
-This pattern : "incantation" has been consulted 1 times!
-```
-
-#### Feature: show consulting history
-
-```bash
-> edict -s
-
-======================================================================================
-|                                         Word|Count|      MARK|    Note B|    Note C|
-|                                  incantation|    2|         M|      None|      None|
-|                                        magic|    1|         M|      None|      None|
-|                                          cat|    1|         M|      None|      None|
-|                                          dog|    1|      None|      None|      None|
-======================================================================================
-```
-
-#### Feature : mark the last word
-
-Note: this utility will record the fail consulting string as well, so if you found a result is good enough for you. You can leave a mark for it, just like the **favorites list**.
-
-```bash
-> edict -m
-======================================================================================
-|                                         Word|Count|      MARK|    Note B|    Note C|
-|                                  incantation|    1|         M|      None|      None|
-====================================================================================== 
-```
-
-#### Feature: dump the list of marked words
-
-```bash
-> edict -l
-======================================================================================
-|                                         Word|Count|      MARK|    Note B|    Note C|
-|                                  incantation|    2|         M|      None|      None|
-|                                        magic|    1|         M|      None|      None|
-|                                          cat|    1|         M|      None|      None|
-======================================================================================
-```
-
-#### Feature: Use generative AI to generate the close test with the list of marked words
-
-This will take a while depending on the response time of OPEN AI. and you probably will get different result every time. I
-
-```textile
-> edict -a
-ASK: Could you generate a close test by using incantation,magic,cat?
-Certainly! Here's a close test using the words "incantation," "magic," and "cat":
-
-1. The witch spoke a mysterious ________ that summoned a powerful spell.
-2. The magician amazed the audience with his incredible ________ tricks.
-3. The ancient book contained secret ________ spells handed down through generations.
-4. The little girl giggled as she watched her ________ playfully chase a ball of yarn.
-5. The sorcerer waved his wand and whispered an ________ to make the object levitate.
-6. The old wizard had a black ________ that seemed to possess mystical powers.
-7. The enchantress used an ________ to transform a pumpkin into a beautiful carriage.
-8. The charmed amulet radiated a pulsating ________ energy.
-9. The feline companion purred contentedly as the witch recited a poetic ________.
-10. The illusionist's breathtaking ________ show left the audience in awe.
-
-Remember to fill in the blanks with the most suitable word that fits the context.
-```
-
-#### Feature empty the history
-
-This simple utility is designed for reading a document once a time currently.
-
-So you might want to empty the record at ceratin point.
-
-```bash
-> edict -f
-Gone in the wind...
-```
-
-To do:
-
-More generic ai feature. It's amazing
+## 🗺 Roadmap
+- [ ] More generic AI features.
+- [ ] Enhanced document reading support.
