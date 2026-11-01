@@ -51,7 +51,22 @@ def repeatStr(string_to_expand, length):
 	return (string_to_expand * ((length/len(string_to_expand))+1))[:length]
 
 def htmlParser(tPage):
-    resp = urllib.request.urlopen(url=tPage)
+    req = urllib.request.Request(
+        tPage,
+        headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                          "(KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+            "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+        },
+    )
+    try:
+        resp = urllib.request.urlopen(req)
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print("page do not exist")
+        else:
+            print(f"can not open page: HTTP {e.code} {e.reason}")
+        exit()
     if resp.code == 200 :
         data = resp.read()
         resp.close()
